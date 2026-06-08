@@ -9,6 +9,7 @@ import baby.sv.yeseverbf.command.Forest1Command;
 import baby.sv.yeseverbf.command.LhcCommand;
 import baby.sv.yeseverbf.command.PlayerTimeCommand;
 import baby.sv.yeseverbf.command.PlayerWeatherCommand;
+import baby.sv.yeseverbf.command.TpaCommand;
 import baby.sv.yeseverbf.world.Forest1WorldLinker;
 import baby.sv.yeseverbf.world.LhcWorldLinker;
 import baby.sv.yeseverbf.config.ModConfig;
@@ -57,6 +58,7 @@ public class Yeseverbf implements DedicatedServerModInitializer {
             FlatWorldCommand.register(dispatcher);
             Forest1Command.register(dispatcher);
             LhcCommand.register(dispatcher);
+            TpaCommand.register(dispatcher);
         });
     }
 }
