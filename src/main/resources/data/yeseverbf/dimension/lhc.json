@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:overworld",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:plains",
+      "lakes": false,
+      "features": false,
+      "decoration": false,
+      "nether_caves": false,
+      "mountain": false,
+      "large_cave": false,
+      "layers": [],
+      "structure_overrides": []
+    }
+  }
+}

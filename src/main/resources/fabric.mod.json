@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "yeseverbf",
+  "version": "${version}",
+  "name": "yeseverbf",
+  "description": "Server backup & personal weather/time mod",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/yeseverbf/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-datagen": [
+      "baby.sv.yeseverbf.client.YeseverbfDataGenerator"
+    ],
+    "server": [
+      "baby.sv.yeseverbf.Yeseverbf"
+    ]
+  },
+  "mixins": [
+    "yeseverbf.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
