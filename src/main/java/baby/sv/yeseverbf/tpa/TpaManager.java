@@ -1,5 +1,6 @@
 package baby.sv.yeseverbf.tpa;
 
+import baby.sv.yeseverbf.util.TeleportEffects;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -101,8 +102,10 @@ public final class TpaManager {
         }
 
         ServerWorld world = (ServerWorld) accepter.getWorld();
+        TeleportEffects.source((ServerWorld) requester.getWorld(), requester.getX(), requester.getY(), requester.getZ());
         requester.teleport(world, accepter.getX(), accepter.getY(), accepter.getZ(),
                 EnumSet.noneOf(PositionFlag.class), accepter.getYaw(), accepter.getPitch(), true);
+        TeleportEffects.arrive(requester, "传送至 " + accepter.getName().getString());
 
         requester.sendMessage(Text.literal(accepter.getName().getString() + " 已同意，正在传送…").formatted(Formatting.GREEN));
         accepter.sendMessage(Text.literal("已同意 " + requesterName + " 的传送请求。").formatted(Formatting.GREEN));

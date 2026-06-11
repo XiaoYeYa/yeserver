@@ -1,5 +1,6 @@
 package baby.sv.yeseverbf.tpwarp;
 
+import baby.sv.yeseverbf.util.TeleportEffects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.registry.RegistryKey;
@@ -99,7 +100,9 @@ public final class WarpManager {
             player.sendMessage(Text.literal("§d[!][夜喵喵] §c传送点所在的世界未加载: " + point.dimension), false);
             return;
         }
+        TeleportEffects.source((ServerWorld) player.getWorld(), player.getX(), player.getY(), player.getZ());
         player.teleport(world, point.x, point.y, point.z, Set.of(), point.yaw, point.pitch, false);
+        TeleportEffects.arrive(player, point.displayTitle());
         player.sendMessage(Text.literal("§d[!][夜喵喵] §a已传送到 §b" + point.displayTitle()), false);
     }
 }

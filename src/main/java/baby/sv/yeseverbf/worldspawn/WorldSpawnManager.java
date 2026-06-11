@@ -1,5 +1,6 @@
 package baby.sv.yeseverbf.worldspawn;
 
+import baby.sv.yeseverbf.util.TeleportEffects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.registry.RegistryKey;
@@ -103,7 +104,9 @@ public final class WorldSpawnManager {
             player.sendMessage(Text.literal("§d[!][夜喵喵] §c该世界未加载: " + worldId), false);
             return false;
         }
+        TeleportEffects.source((ServerWorld) player.getWorld(), player.getX(), player.getY(), player.getZ());
         player.teleport(world, point.x, point.y, point.z, Set.of(), point.yaw, point.pitch, false);
+        TeleportEffects.arrive(player, "世界出生点 · " + worldId);
         return true;
     }
 }
