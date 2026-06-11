@@ -44,7 +44,6 @@ public final class RoleManager {
 
     private static final int TP_MENU_SLOT = 0;
     private static final int NIGHT_VISION_SLOT = 1;
-    public static final int GAMEMODE_SLOT = 2;
     private static final int FLY_CTRL_SLOT = 8;
 
     private RoleManager() {
@@ -134,22 +133,22 @@ public final class RoleManager {
         ensureGuestItems(player);
     }
 
-    /** 旁观 / 冒险 互相切换（仅游客可用）。 */
-    public static void toggleGameMode(ServerPlayerEntity player) {
+    /** 设置游客的旁观 / 冒险模式（仅游客可用）。返回是否成功执行。 */
+    public static boolean setSpectator(ServerPlayerEntity player, boolean spectate) {
         if (!isGuest(player)) {
-            return;
+            return false;
         }
-        if (spectatorGuests.remove(player.getUuid())) {
+        if (spectate) {
+            spectatorGuests.add(player.getUuid());
+            player.changeGameMode(GameMode.SPECTATOR);
+        } else {
+            spectatorGuests.remove(player.getUuid());
             player.changeGameMode(GameMode.ADVENTURE);
             player.getAbilities().allowFlying = true;
             player.sendAbilitiesUpdate();
             feed(player);
-            player.sendMessage(Text.literal("已切换到冒险模式").formatted(Formatting.GREEN), true);
-        } else {
-            spectatorGuests.add(player.getUuid());
-            player.changeGameMode(GameMode.SPECTATOR);
-            player.sendMessage(Text.literal("已切换到旁观者模式").formatted(Formatting.LIGHT_PURPLE), true);
         }
+        return true;
     }
 
     public static boolean isSpectatorGuest(ServerPlayerEntity player) {
@@ -171,7 +170,6 @@ public final class RoleManager {
         removeSpecialItems(player);
         setSpecialSlot(player, TP_MENU_SLOT, SpecialItems.teleportMenu());
         setSpecialSlot(player, NIGHT_VISION_SLOT, SpecialItems.nightVision());
-        setSpecialSlot(player, GAMEMODE_SLOT, SpecialItems.gamemodeToggle());
         setSpecialSlot(player, FLY_CTRL_SLOT, SpecialItems.flightController());
     }
 
@@ -199,7 +197,7 @@ public final class RoleManager {
 
     private static int firstEmptySlot(PlayerInventory inv) {
         for (int i = 0; i < inv.main.size(); i++) {
-            if (i == TP_MENU_SLOT || i == NIGHT_VISION_SLOT || i == GAMEMODE_SLOT || i == FLY_CTRL_SLOT) {
+            if (i == TP_MENU_SLOT || i == NIGHT_VISION_SLOT || i == FLY_CTRL_SLOT) {
                 continue;
             }
             if (inv.getStack(i).isEmpty()) {

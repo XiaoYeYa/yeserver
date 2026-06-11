@@ -103,8 +103,6 @@ public final class GuestEventHandlers {
             FlightController.cycle(player);
         } else if (SpecialItems.NIGHT_VISION.equals(marker)) {
             toggleNightVision(player);
-        } else if (SpecialItems.GAMEMODE.equals(marker)) {
-            RoleManager.toggleGameMode(player);
         }
     }
 

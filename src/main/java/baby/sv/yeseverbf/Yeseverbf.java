@@ -10,6 +10,7 @@ import baby.sv.yeseverbf.command.LhcCommand;
 import baby.sv.yeseverbf.command.PlayerTimeCommand;
 import baby.sv.yeseverbf.command.PlayerWeatherCommand;
 import baby.sv.yeseverbf.command.RoleCommand;
+import baby.sv.yeseverbf.command.SpectateCommand;
 import baby.sv.yeseverbf.command.TpaCommand;
 import baby.sv.yeseverbf.command.WarpCommand;
 import baby.sv.yeseverbf.command.WorldSpawnCommand;
@@ -71,6 +72,7 @@ public class Yeseverbf implements DedicatedServerModInitializer {
             LhcCommand.register(dispatcher);
             TpaCommand.register(dispatcher);
             RoleCommand.register(dispatcher);
+            SpectateCommand.register(dispatcher);
             WarpCommand.register(dispatcher);
             WorldSpawnCommand.register(dispatcher);
         });

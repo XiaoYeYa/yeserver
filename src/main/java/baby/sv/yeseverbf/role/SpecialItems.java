@@ -17,7 +17,6 @@ public final class SpecialItems {
     public static final String TP_MENU = "tp_menu";
     public static final String FLY_CTRL = "fly_ctrl";
     public static final String NIGHT_VISION = "night_vision";
-    public static final String GAMEMODE = "gamemode";
 
     private SpecialItems() {
     }
@@ -43,14 +42,6 @@ public final class SpecialItems {
         stack.set(DataComponentTypes.CUSTOM_NAME,
                 Text.literal("夜视开关").formatted(Formatting.GOLD, Formatting.BOLD).styled(s -> s.withItalic(false)));
         mark(stack, NIGHT_VISION);
-        return stack;
-    }
-
-    public static ItemStack gamemodeToggle() {
-        ItemStack stack = new ItemStack(Items.SPYGLASS);
-        stack.set(DataComponentTypes.CUSTOM_NAME,
-                Text.literal("旁观/冒险切换").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD).styled(s -> s.withItalic(false)));
-        mark(stack, GAMEMODE);
         return stack;
     }
 
