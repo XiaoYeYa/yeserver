@@ -9,6 +9,7 @@
     "TeleportCommandMixin",
     "GuestRestrictionMixin",
     "GuestTrapAvoidMixin",
+    "GuestFallDamageMixin",
     "ServerPlayerListNameMixin"
   ],
   "injectors": {

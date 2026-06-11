@@ -9,13 +9,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 /**
- * 游客专属物品（不可丢弃、不可移动）：传送菜单、飞行控制器。
+ * 游客专属物品（不可丢弃、不可移动）：传送菜单、飞行控制器、夜视开关。
  * 通过 CUSTOM_DATA 里的标记字段识别，避免与玩家普通物品混淆。
  */
 public final class SpecialItems {
     public static final String MARKER_KEY = "yeseverbf_item";
     public static final String TP_MENU = "tp_menu";
     public static final String FLY_CTRL = "fly_ctrl";
+    public static final String NIGHT_VISION = "night_vision";
+    public static final String GAMEMODE = "gamemode";
 
     private SpecialItems() {
     }
@@ -33,6 +35,22 @@ public final class SpecialItems {
         stack.set(DataComponentTypes.CUSTOM_NAME,
                 Text.literal("飞行控制器").formatted(Formatting.YELLOW, Formatting.BOLD).styled(s -> s.withItalic(false)));
         mark(stack, FLY_CTRL);
+        return stack;
+    }
+
+    public static ItemStack nightVision() {
+        ItemStack stack = new ItemStack(Items.GOLDEN_CARROT);
+        stack.set(DataComponentTypes.CUSTOM_NAME,
+                Text.literal("夜视开关").formatted(Formatting.GOLD, Formatting.BOLD).styled(s -> s.withItalic(false)));
+        mark(stack, NIGHT_VISION);
+        return stack;
+    }
+
+    public static ItemStack gamemodeToggle() {
+        ItemStack stack = new ItemStack(Items.SPYGLASS);
+        stack.set(DataComponentTypes.CUSTOM_NAME,
+                Text.literal("旁观/冒险切换").formatted(Formatting.LIGHT_PURPLE, Formatting.BOLD).styled(s -> s.withItalic(false)));
+        mark(stack, GAMEMODE);
         return stack;
     }
 

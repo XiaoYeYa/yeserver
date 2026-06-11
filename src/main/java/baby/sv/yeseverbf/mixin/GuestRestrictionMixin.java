@@ -3,6 +3,7 @@ package baby.sv.yeseverbf.mixin;
 import baby.sv.yeseverbf.role.RoleManager;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -41,6 +42,17 @@ public abstract class GuestRestrictionMixin {
         if (player.currentScreenHandler instanceof PlayerScreenHandler) {
             player.playerScreenHandler.syncState();
             ci.cancel();
+        }
+    }
+
+    // 旁观者模式下无法右键物品，所以用"选中旁观/冒险切换物品所在格子"作为切回冒险的方式
+    @Inject(method = "onUpdateSelectedSlot", at = @At("HEAD"))
+    private void yeseverbf$guestSpectatorReturn(UpdateSelectedSlotC2SPacket packet, CallbackInfo ci) {
+        if (player == null || !RoleManager.isSpectatorGuest(player)) {
+            return;
+        }
+        if (packet.getSelectedSlot() == RoleManager.GAMEMODE_SLOT) {
+            RoleManager.toggleGameMode(player);
         }
     }
 }

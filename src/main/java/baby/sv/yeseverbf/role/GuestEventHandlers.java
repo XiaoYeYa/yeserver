@@ -9,9 +9,13 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 
 /**
  * 注册所有与游客/Staff 身份相关的服务端事件。
@@ -23,9 +27,11 @@ public final class GuestEventHandlers {
     }
 
     public static void register() {
-        // 进服时应用身份状态（默认游客）
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-                RoleManager.apply(handler.player));
+        // 进服时应用身份状态（默认游客；旁观状态不跨会话保留）
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            RoleManager.clearSpectator(handler.player);
+            RoleManager.apply(handler.player);
+        });
 
         // 聊天带称号
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
@@ -95,6 +101,21 @@ public final class GuestEventHandlers {
             TeleportMenu.open(player);
         } else if (SpecialItems.FLY_CTRL.equals(marker)) {
             FlightController.cycle(player);
+        } else if (SpecialItems.NIGHT_VISION.equals(marker)) {
+            toggleNightVision(player);
+        } else if (SpecialItems.GAMEMODE.equals(marker)) {
+            RoleManager.toggleGameMode(player);
+        }
+    }
+
+    private static void toggleNightVision(ServerPlayerEntity player) {
+        if (player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+            player.removeStatusEffect(StatusEffects.NIGHT_VISION);
+            player.sendMessage(Text.literal("夜视：已关闭").formatted(Formatting.GRAY), true);
+        } else {
+            player.addStatusEffect(new StatusEffectInstance(
+                    StatusEffects.NIGHT_VISION, StatusEffectInstance.INFINITE, 0, false, false, true));
+            player.sendMessage(Text.literal("夜视：已开启").formatted(Formatting.GOLD), true);
         }
     }
 }
