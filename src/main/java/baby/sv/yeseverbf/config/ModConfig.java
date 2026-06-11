@@ -13,7 +13,7 @@ public class ModConfig {
     private static ModConfig INSTANCE;
 
     public String backupDirectory = "backups";
-    public int maxBackups = 20;
+    public int maxBackups = 5;
     public int autoBackupIntervalMinutes = 120;
     public int httpApiPort = 7655;
     public String httpApiToken = "change-me-to-a-secret-token";

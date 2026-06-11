@@ -6,7 +6,9 @@
   "mixins": [
     "WorldTimeUpdateMixin",
     "PlayerDisconnectMixin",
-    "TeleportCommandMixin"
+    "TeleportCommandMixin",
+    "GuestRestrictionMixin",
+    "ServerPlayerListNameMixin"
   ],
   "injectors": {
     "defaultRequire": 1
