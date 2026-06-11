@@ -9,6 +9,14 @@ import baby.sv.yeseverbf.command.Forest1Command;
 import baby.sv.yeseverbf.command.LhcCommand;
 import baby.sv.yeseverbf.command.PlayerTimeCommand;
 import baby.sv.yeseverbf.command.PlayerWeatherCommand;
+import baby.sv.yeseverbf.command.RoleCommand;
+import baby.sv.yeseverbf.command.TpaCommand;
+import baby.sv.yeseverbf.command.WarpCommand;
+import baby.sv.yeseverbf.command.WorldSpawnCommand;
+import baby.sv.yeseverbf.role.GuestEventHandlers;
+import baby.sv.yeseverbf.role.RoleManager;
+import baby.sv.yeseverbf.tpwarp.WarpManager;
+import baby.sv.yeseverbf.worldspawn.WorldSpawnManager;
 import baby.sv.yeseverbf.world.Forest1WorldLinker;
 import baby.sv.yeseverbf.world.LhcWorldLinker;
 import baby.sv.yeseverbf.config.ModConfig;
@@ -29,6 +37,10 @@ public class Yeseverbf implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         LOGGER.info("Yeseverbf loading...");
         ModConfig.load();
+        RoleManager.load();
+        WarpManager.load();
+        WorldSpawnManager.load();
+        GuestEventHandlers.register();
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             Forest1WorldLinker.linkForest1(server.getSavePath(net.minecraft.util.WorldSavePath.ROOT));
@@ -57,6 +69,10 @@ public class Yeseverbf implements DedicatedServerModInitializer {
             FlatWorldCommand.register(dispatcher);
             Forest1Command.register(dispatcher);
             LhcCommand.register(dispatcher);
+            TpaCommand.register(dispatcher);
+            RoleCommand.register(dispatcher);
+            WarpCommand.register(dispatcher);
+            WorldSpawnCommand.register(dispatcher);
         });
     }
 }
