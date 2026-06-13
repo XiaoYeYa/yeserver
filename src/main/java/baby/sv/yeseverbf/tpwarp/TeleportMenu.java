@@ -19,8 +19,8 @@ import java.util.List;
  */
 public final class TeleportMenu {
 
-    // 按格子顺序循环使用的图标：末影之眼 / 火把 / 烈焰粉 / 风弹
-    private static final Item[] ICONS = {Items.ENDER_EYE, Items.TORCH, Items.BLAZE_POWDER, Items.WIND_CHARGE};
+    // 按格子顺序循环使用的图标：末影之眼 / 火把花 / 烈焰粉 / 风弹
+    private static final Item[] ICONS = {Items.ENDER_EYE, Items.TORCHFLOWER, Items.BLAZE_POWDER, Items.WIND_CHARGE};
 
     private TeleportMenu() {
     }
