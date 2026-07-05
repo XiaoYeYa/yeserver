@@ -1,0 +1,22 @@
+{
+  "type": "yeseverbf:sea_world",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "minecraft:deep_ocean",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "minecraft:water",
+          "height": 363
+        }
+      ],
+      "structure_overrides": []
+    }
+  }
+}
