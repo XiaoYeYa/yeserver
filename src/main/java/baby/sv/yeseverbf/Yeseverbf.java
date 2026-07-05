@@ -75,7 +75,7 @@ public class Yeseverbf implements DedicatedServerModInitializer {
             TpaCommand.register(dispatcher);
             RoleCommand.register(dispatcher);
             SpectateCommand.register(dispatcher);
-            WarpCommand.register(dispatcher);
+            WarpCommand.register(dispatcher, registryAccess);
             WorldSpawnCommand.register(dispatcher);
         });
     }
