@@ -3,6 +3,7 @@ package baby.sv.yeseverbf.tpwarp;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
@@ -18,6 +19,9 @@ import java.util.List;
  */
 public final class TeleportMenu {
 
+    // 按格子顺序循环使用的图标：末影之眼 / 火把花 / 烈焰粉 / 风弹
+    private static final Item[] ICONS = {Items.ENDER_EYE, Items.TORCHFLOWER, Items.BLAZE_POWDER, Items.WIND_CHARGE};
+
     private TeleportMenu() {
     }
 
@@ -30,7 +34,7 @@ public final class TeleportMenu {
         int size = rows * 9;
         SimpleInventory inventory = new SimpleInventory(size);
         for (int i = 0; i < points.size() && i < size; i++) {
-            inventory.setStack(i, icon(points.get(i)));
+            inventory.setStack(i, icon(points.get(i), i));
         }
         final int finalRows = rows;
         player.openHandledScreen(new SimpleNamedScreenHandlerFactory(
@@ -39,8 +43,8 @@ public final class TeleportMenu {
                 Text.literal("传送菜单")));
     }
 
-    private static ItemStack icon(TeleportPoint point) {
-        ItemStack stack = new ItemStack(Items.ENDER_PEARL);
+    private static ItemStack icon(TeleportPoint point, int index) {
+        ItemStack stack = new ItemStack(ICONS[index % ICONS.length]);
         stack.set(DataComponentTypes.CUSTOM_NAME,
                 Text.literal(point.displayTitle()).formatted(Formatting.AQUA).styled(s -> s.withItalic(false)));
         if (point.description != null && !point.description.isEmpty()) {

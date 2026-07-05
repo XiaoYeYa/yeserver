@@ -39,7 +39,11 @@ public final class RoleManager {
     // OP 但主动切换到游客模式的玩家
     private static final Set<UUID> forcedGuests = ConcurrentHashMap.newKeySet();
 
+    // 主动切换到旁观者模式的游客（仅本次在线有效，重新进服恢复冒险）
+    private static final Set<UUID> spectatorGuests = ConcurrentHashMap.newKeySet();
+
     private static final int TP_MENU_SLOT = 0;
+    private static final int NIGHT_VISION_SLOT = 1;
     private static final int FLY_CTRL_SLOT = 8;
 
     private RoleManager() {
@@ -113,15 +117,46 @@ public final class RoleManager {
     }
 
     private static void applyGuest(ServerPlayerEntity player) {
-        if (player.interactionManager.getGameMode() != GameMode.ADVENTURE) {
-            player.changeGameMode(GameMode.ADVENTURE);
+        boolean spectating = spectatorGuests.contains(player.getUuid());
+        GameMode target = spectating ? GameMode.SPECTATOR : GameMode.ADVENTURE;
+        if (player.interactionManager.getGameMode() != target) {
+            player.changeGameMode(target);
         }
-        // 冒险模式下也允许飞行
-        if (!player.getAbilities().allowFlying) {
-            player.getAbilities().allowFlying = true;
-            player.sendAbilitiesUpdate();
+        if (!spectating) {
+            // 冒险模式下也允许飞行
+            if (!player.getAbilities().allowFlying) {
+                player.getAbilities().allowFlying = true;
+                player.sendAbilitiesUpdate();
+            }
+            feed(player);
         }
         ensureGuestItems(player);
+    }
+
+    /** 设置游客的旁观 / 冒险模式（仅游客可用）。返回是否成功执行。 */
+    public static boolean setSpectator(ServerPlayerEntity player, boolean spectate) {
+        if (!isGuest(player)) {
+            return false;
+        }
+        if (spectate) {
+            spectatorGuests.add(player.getUuid());
+            player.changeGameMode(GameMode.SPECTATOR);
+        } else {
+            spectatorGuests.remove(player.getUuid());
+            player.changeGameMode(GameMode.ADVENTURE);
+            player.getAbilities().allowFlying = true;
+            player.sendAbilitiesUpdate();
+            feed(player);
+        }
+        return true;
+    }
+
+    public static boolean isSpectatorGuest(ServerPlayerEntity player) {
+        return spectatorGuests.contains(player.getUuid());
+    }
+
+    public static void clearSpectator(ServerPlayerEntity player) {
+        spectatorGuests.remove(player.getUuid());
     }
 
     private static void applyStaff(ServerPlayerEntity player) {
@@ -134,7 +169,16 @@ public final class RoleManager {
         // 先移除可能存在于其它位置的专属物品，避免重复
         removeSpecialItems(player);
         setSpecialSlot(player, TP_MENU_SLOT, SpecialItems.teleportMenu());
+        setSpecialSlot(player, NIGHT_VISION_SLOT, SpecialItems.nightVision());
         setSpecialSlot(player, FLY_CTRL_SLOT, SpecialItems.flightController());
+    }
+
+    /** 常驻饱腹：始终保持饱食度、不掉饥饿值。 */
+    private static void feed(ServerPlayerEntity player) {
+        if (player.getHungerManager().getFoodLevel() < 20) {
+            player.getHungerManager().setFoodLevel(20);
+        }
+        player.getHungerManager().setSaturationLevel(20.0f);
     }
 
     private static void setSpecialSlot(ServerPlayerEntity player, int slot, ItemStack special) {
@@ -153,7 +197,7 @@ public final class RoleManager {
 
     private static int firstEmptySlot(PlayerInventory inv) {
         for (int i = 0; i < inv.main.size(); i++) {
-            if (i == TP_MENU_SLOT || i == FLY_CTRL_SLOT) {
+            if (i == TP_MENU_SLOT || i == NIGHT_VISION_SLOT || i == FLY_CTRL_SLOT) {
                 continue;
             }
             if (inv.getStack(i).isEmpty()) {
@@ -217,13 +261,21 @@ public final class RoleManager {
                 staffCount++;
             } else {
                 guestCount++;
-                // 周期性确保游客始终处于冒险模式 + 可飞行
-                if (player.interactionManager.getGameMode() != GameMode.ADVENTURE) {
-                    player.changeGameMode(GameMode.ADVENTURE);
-                }
-                if (!player.getAbilities().allowFlying) {
-                    player.getAbilities().allowFlying = true;
-                    player.sendAbilitiesUpdate();
+                if (spectatorGuests.contains(player.getUuid())) {
+                    // 主动旁观的游客：维持旁观，不强制拉回冒险
+                    if (player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
+                        player.changeGameMode(GameMode.SPECTATOR);
+                    }
+                } else {
+                    // 周期性确保游客始终处于冒险模式 + 可飞行 + 常驻饱腹
+                    if (player.interactionManager.getGameMode() != GameMode.ADVENTURE) {
+                        player.changeGameMode(GameMode.ADVENTURE);
+                    }
+                    if (!player.getAbilities().allowFlying) {
+                        player.getAbilities().allowFlying = true;
+                        player.sendAbilitiesUpdate();
+                    }
+                    feed(player);
                 }
             }
         }
