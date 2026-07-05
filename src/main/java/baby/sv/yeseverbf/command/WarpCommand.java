@@ -5,20 +5,25 @@ import baby.sv.yeseverbf.tpwarp.TeleportPoint;
 import baby.sv.yeseverbf.tpwarp.WarpManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 /**
- * /warp add|settitle|setdesc|remove|list|tp|menu —— 管理传送点。
+ * /warp add|settitle|setdesc|seticon|clearicon|remove|list|tp|menu —— 管理传送点。
  */
 public final class WarpCommand {
 
     private WarpCommand() {
     }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         dispatcher.register(
                 CommandManager.literal("warp")
                         .requires(source -> source.hasPermissionLevel(2))
@@ -38,6 +43,17 @@ public final class WarpCommand {
                                                 .executes(ctx -> setDesc(ctx.getSource(),
                                                         StringArgumentType.getString(ctx, "id"),
                                                         StringArgumentType.getString(ctx, "description"))))))
+                        .then(CommandManager.literal("seticon")
+                                .then(CommandManager.argument("id", StringArgumentType.word())
+                                        .then(CommandManager.argument("item", ItemStackArgumentType.itemStack(registryAccess))
+                                                .executes(ctx -> setIcon(ctx.getSource(),
+                                                        StringArgumentType.getString(ctx, "id"),
+                                                        ItemStackArgumentType.getItemStackArgument(ctx, "item").createStack(1, false)))))
+                        )
+                        .then(CommandManager.literal("clearicon")
+                                .then(CommandManager.argument("id", StringArgumentType.word())
+                                        .executes(ctx -> clearIcon(ctx.getSource(),
+                                                StringArgumentType.getString(ctx, "id")))))
                         .then(CommandManager.literal("remove")
                                 .then(CommandManager.argument("id", StringArgumentType.word())
                                         .executes(ctx -> remove(ctx.getSource(),
@@ -95,6 +111,37 @@ public final class WarpCommand {
         point.description = description;
         WarpManager.save();
         source.sendFeedback(() -> Text.literal("§d[!][夜喵喵] §a已设置 §b" + id + " §a的描述"), true);
+        return 1;
+    }
+
+    private static int setIcon(ServerCommandSource source, String id, ItemStack stack) {
+        TeleportPoint point = WarpManager.get().get(id);
+        if (point == null) {
+            source.sendError(Text.literal("§d[!][夜喵喵] §c不存在的传送点: " + id));
+            return 0;
+        }
+
+        if (stack == null || stack.isEmpty() || stack.getItem() == Items.AIR) {
+            source.sendError(Text.literal("§d[!][夜喵喵] §c无效的图标物品"));
+            return 0;
+        }
+
+        point.icon = Registries.ITEM.getId(stack.getItem()).toString();
+        WarpManager.save();
+        source.sendFeedback(() -> Text.literal("§d[!][夜喵喵] §a已设置 §b" + id + " §a的图标"), true);
+        return 1;
+    }
+
+    private static int clearIcon(ServerCommandSource source, String id) {
+        TeleportPoint point = WarpManager.get().get(id);
+        if (point == null) {
+            source.sendError(Text.literal("§d[!][夜喵喵] §c不存在的传送点: " + id));
+            return 0;
+        }
+
+        point.icon = null;
+        WarpManager.save();
+        source.sendFeedback(() -> Text.literal("§d[!][夜喵喵] §a已将 §b" + id + " §a的图标重置为默认"), true);
         return 1;
     }
 
