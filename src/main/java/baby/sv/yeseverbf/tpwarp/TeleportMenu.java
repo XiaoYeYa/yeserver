@@ -6,9 +6,11 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -19,8 +21,8 @@ import java.util.List;
  */
 public final class TeleportMenu {
 
-    // 按格子顺序循环使用的图标：末影之眼 / 火把花 / 烈焰粉 / 风弹
-    private static final Item[] ICONS = {Items.ENDER_EYE, Items.TORCHFLOWER, Items.BLAZE_POWDER, Items.WIND_CHARGE};
+    // 按格子顺序循环使用的图标：末影之眼 / 火把花 / 下界石英 / 风弹 / 海洋之心
+    private static final Item[] ICONS = {Items.ENDER_EYE, Items.TORCHFLOWER, Items.QUARTZ, Items.WIND_CHARGE, Items.HEART_OF_THE_SEA};
 
     private TeleportMenu() {
     }
@@ -44,7 +46,21 @@ public final class TeleportMenu {
     }
 
     private static ItemStack icon(TeleportPoint point, int index) {
-        ItemStack stack = new ItemStack(ICONS[index % ICONS.length]);
+        Item item = null;
+        if (point.icon != null && !point.icon.isEmpty()) {
+            Identifier id = Identifier.tryParse(point.icon);
+            if (id != null) {
+                Item customItem = Registries.ITEM.get(id);
+                if (customItem != Items.AIR) {
+                    item = customItem;
+                }
+            }
+        }
+        if (item == null) {
+            item = ICONS[index % ICONS.length];
+        }
+
+        ItemStack stack = new ItemStack(item);
         stack.set(DataComponentTypes.CUSTOM_NAME,
                 Text.literal(point.displayTitle()).formatted(Formatting.AQUA).styled(s -> s.withItalic(false)));
         if (point.description != null && !point.description.isEmpty()) {

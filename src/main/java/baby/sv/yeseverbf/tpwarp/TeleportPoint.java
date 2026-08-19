@@ -7,6 +7,7 @@ public class TeleportPoint {
     public String id;
     public String title;
     public String description;
+    public String icon;
     public String dimension;
     public double x;
     public double y;
